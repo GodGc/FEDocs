@@ -504,6 +504,13 @@ createStore 生成的 store（应用状态 state 的管理者） 有四个 API�
    }
    ```
 
-   
+## 参考文章
+
+[[译]2019 React Redux 完全指南](https://juejin.im/post/5cac8ccd6fb9a068530111c7#heading-6)
+
+[在 React 中使用 Redux](https://juejin.im/post/5b755537e51d45661d27cdc3#heading-0)
 
 
+## Redux 进阶
+
+[https://github.com/kenberkeley/redux-simple-tutorial/blob/master/redux-advanced-tutorial.md](https://github.com/kenberkeley/redux-simple-tutorial/blob/master/redux-advanced-tutorial.md)
