@@ -1,0 +1,12 @@
+node_modules
+dist/**
+dll/**
+react_output/**
+.idea
+.vscode
+.DS_Store
+.temp
+.history
+*.log
+package-lock.json
+coverage

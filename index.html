@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>GodGc's Docs</title>
+  <link rel="stylesheet" href="https://unpkg.com/docute@4/dist/docute.css">
+</head>
+
+<body>
+  <div id="doc-root"></div>
+  <script src="https://unpkg.com/docute@4/dist/docute.js"></script>
+  <script>
+    const showAuthor = {
+      name: 'showAuthor',
+      extend(api) {
+        api.processMarkdown(text => {
+          return text.replace(/{author}/g, '> Written by GodGc')
+        })
+      }
+    }
+    new Docute({
+      target: '#doc-root',
+      title: "GodGc's Docs",
+      footer: {
+        template: `
+        <div class="footer" style="color: rgb(153, 153, 153)">
+          © 2020 Developed by <a href="http://www.godrry.com" style="color: #009688">GodGc</a>. Power by Docute.Released under MIT license.
+        </div>
+        `
+      },
+      plugins: [showAuthor],
+      sidebar: [{
+          title: '网络篇',
+          link: '/interweb/network.md'
+        },
+        {
+          title: 'Javascript篇',
+          children: [{
+              title: 'ES5',
+              link: '/javascript/ES5'
+            },
+            {
+              title: 'ES6',
+              link: '/javascript/ES6'
+            }
+          ]
+        },
+        {
+          title: 'React篇',
+          children: [{
+              title: 'react',
+              link: '/react/react'
+            },
+            {
+              title: 'redux',
+              link: '/react/redux'
+            }
+          ]
+        },
+
+      ],
+      nav: [{
+          title: 'Home',
+          link: '/'
+        },
+        {
+          title: 'Blog',
+          link: 'http://www.godrry.com'
+        }
+      ]
+    })
+  </script>
+</body>
+
+</html>
