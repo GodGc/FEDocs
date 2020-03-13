@@ -4,8 +4,6 @@
 
 __I hope this doc can help u know something u dont know yet.__
 
-{author}
-
 __FAQ__:
 
 <details>
