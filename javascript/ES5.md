@@ -25,7 +25,7 @@
 
 #### 闭包
 定义：函数A返回一个函数B，并且函数B中使用了函数A中的变量，函数B就被成为闭包
-```JavaScript
+```javascript
 
 function A() {
   let a = 1
@@ -81,7 +81,7 @@ call 和 apply 都是为了解决改变this的指向，只是传参的方式不�
 - bind 也可以改变this的指向，但是它返回的是一个函数
 - 哪个性能更优？**call**
 
-```JavaScript
+```javascript
 
 let a = {
     value: 1
@@ -96,7 +96,7 @@ getValue.apply(a, ['yck', '24'])
 ```
 
 #### 实现一个call
-```JavaScript
+```javascript
 Function.prototype.myCall = function (context){
     var context = context || window
     // 调用者是个函数
@@ -113,7 +113,7 @@ Function.prototype.myCall = function (context){
 ```
 
 #### 实现一个apply
-```JavaScript
+```javascript
 Fucntion.prototype.myApply = function (context) {
     var context = context || window;
     context.fn = this;
@@ -130,7 +130,7 @@ Fucntion.prototype.myApply = function (context) {
 ```
 
 #### 实现bind
-```JavaScript
+```javascript
 
 Function.prototype.myBind = function (context) {
     if(typeof this !== 'function'){
@@ -277,7 +277,7 @@ function create(){
 - Object.create 可以自主的选择要继承的父类是什么，可以是构造函数(Object)，也可以是一个实例对象，也可以是其他 比如null，基于null创建出来的对象Object.create(null)，是一个**非常纯净**的对象，它不会有Object的任何属性和方法，十分纯净
     - Object.create(proto,[propertiesObject])
 
-    ```JavaScript
+    ```javascript
     function _inherits(subClass, superClass) { 
         subClass.prototype = Object.create(superClass.prototype, {
             constructor: { 
@@ -293,7 +293,7 @@ function create(){
 ```
     
 **实现一个Object.create**
-```JavaScript
+```javascript
 
 Object.create = function (obj, properties) { 
     // 新建一个空函数
@@ -311,11 +311,11 @@ Object.create = function (obj, properties) {
 
 
 ## 继承、设计模式
-在JavaScript中，实现继承的最根本思想是**原型链**。
+在javascript中，实现继承的最根本思想是**原型链**。
 ### ES5中的两种经典继承
 #### 组合继承
 这样避免了单独使用原型链和构造函数的缺陷：一旦修改了prototype，则构造函数中的也会发生改变
-```JavaScript
+```javascript
 //构造函数继承实例属性(当然也可以有方法，不过不建议这么做)
 function Phone(name){
     this.name = name;
@@ -357,7 +357,7 @@ h1.listenMusic();//调用子类添加在原型上的方法
 寄生组合继承：关键点就是理解上文提到的inhert()方法：将父类的原型赋给一个临时对象，子类的原型指向该临时对象，如此得到父类原型上的属性和方法。再通过构造函数组合父类和子类本身上的属性或方法。
 
 `inhert` 方法，实现一下：
-```JavaScript
+```javascript
 function inherit(son, father){
     let prototypeObj = Object.create(father.prototype);
     prototypeObj.constructor = son;
@@ -370,7 +370,7 @@ function inherit(son, father){
 ES6中通过Class‘类’这个语法糖实现继承和Java等面向对象的语言在实现继承上已经非常相似，当然只是语法层面相似，本质当然依旧是通过原型实现的。ES6实现继承是通过关键字extends、super来实现继承，和面向对象语言Java一样。
 **通过class继承可以继承父类的静态方法**
 
-```JavaScript
+```javascript
 class Person {
     constructor(name, age){
         this.name = name;
@@ -555,7 +555,7 @@ _.throttle = function(func, wait, options) {
     - 基于axios封装
 
 Ajax请求是通过`XMLHttpRequest`来实现的，XMLHttpRequest是用来做网络请求的。
-```JavaScript
+```javascript
 function sendAjax(){
     // 构造一个form数据
     var formData = new FormData();
@@ -585,7 +585,7 @@ function sendAjax(){
 }
 ```
 ### promise 封装ajax
-```JavaScript
+```javascript
 
 function promiseAjax(url){
     return new Promise(function(resolve, reject){
@@ -783,7 +783,7 @@ body: JSON.stringify({
 ```
 
 **封装**
-```JavaScript
+```javascript
     function jsonp(url, jsonpCallback, success){
         let script = document.createElement('script');
         script.src = url;

@@ -2,7 +2,7 @@
 
 __I hope this doc can help u know something u dont know yet.__
 
-![](https://tva1.sinaimg.cn/large/00831rSTgy1gcseqxx1gkj30u00u7qj2.jpg)
+<!-- ![](https://tva1.sinaimg.cn/large/00831rSTgy1gcseqxx1gkj30u00u7qj2.jpg) -->
 
 
 

@@ -151,7 +151,7 @@ HTTP 1.1 相对于HTTP 1.0，多了一个Connection请求头字段的值：keep-
 WebSocket是一种双向通信协议。在建立连接后，WebSocket服务器端和客户端都能主动向对方发送或接收数据，就像Socket一样；WebSocket需要像TCP一样，先建立连接，连接成功后才能相互通信。
 
 ### 前端代码：
-```JavaScript
+```javascript
 function socketConnect(url) {
     // 客户端与服务器进行连接
     let ws = new WebSocket(url); // 返回`WebSocket`对象，赋值给变量ws
@@ -353,7 +353,7 @@ load事件必须等到网页中所有内容全部加载完毕之后才被执行�
 ### XSS攻击：
   html代码中嵌入了script脚本内容，`<div><script>alert(1)</script></div>`, 或者在url参数上拼接了script代码
   如何防范：对敏感字符进行转义
-  ```JavaScript
+  ```javascript
 
     function escape(str) {
       str = str.replace(/&/g, '&amp;')

@@ -23,7 +23,7 @@
 - 链式then，传入2个参数：具体的resolve、reject方法
 
 
-```JavaScript
+```javascript
 const promise = new Promise(function(resolve, reject){
     // ...some code
     // 比如做一些ajax请求，拿数据
@@ -45,7 +45,7 @@ promise.then(function(value{
 
 > promise代表一个异步操作的最终结果。与promise的主要互动方式是通过then方法注册回调函数来接收promise的最终值或者promise未完成的原因。
 
-```JavaScript
+```javascript
 
 const PENDING = "pending"
 const RESOLVED = "resolved"
@@ -209,7 +209,7 @@ function resolutionProcedure(promise, x, resolve, reject){
 
 
 ### 用Promise实现Ajax操作
-```JavaScript
+```javascript
 
 const getJSON = function (url) {
     const promise = new Promise(function(resolve, reject){

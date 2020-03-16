@@ -106,6 +106,7 @@
 - 如果不`super(props)`，是无法正常使用`this`的 => `undefined`
 - 一定要传`props`吗？如果只`super()`可以吗？
     - 可以，但是不建议，因为React如果发现我们没有在super中传props，那么它会替我们的组件设置`props`属性，虽然`props`可以拿到值，但是`this.props`在`constructor`中却会一直都会是`undefined`
+    
 ```JavaScript
 
 // Inside React 
@@ -142,6 +143,7 @@ class Button extends React.Component {
 ```
 
 >ps:当有了class 属性提案(class fields proposal)，大部分的坑都会消失。在没有标明constructor的情况下，全部参数会被自动传入。这样就允许像state = {}的表达式，如果有需要this.props或者this.context将同样适用。Hooks中，我们甚至不需要super或者this。
+
 ```javascript
 // 旧版
 class Checkbox extends React.Component { 
