@@ -215,18 +215,177 @@ function ThemedButton() {
 
 ## `useReducer`
 
+> 听这个api的名字，感到熟悉了吗？是的，就像是Redux似的。
 
+```javascript
+/*
+  reducer: fn
+  initialArg: 指定初始值
+  init 可以省略: fn, 会自动的传入initialArg, init(initialArg)
+*/
+const [state, dispatch] = useReducer(reducer, initialArg, init);
+```
+
+它可以看做是`useState`的替代方案，像Redux一样提供 数据管理 的方式， 但是Redux是全局的，`useReducer`是局部的。
+
+接收一个形如 `(state, action) => newState` 的 reducer，返回当前的state 以及 配套的 `dispatch` 方法。
+
+如果`state`逻辑复杂且包含多个子值，当你使用`useState`重新赋值时会感到非常麻烦，又要保存之前不必更改的部分，又要修改你需要修改的地方，这很让人头疼...
+
+使用 `useReducer` 还能给那些会触发深更新的组件做性能优化，因为你可以向子组件传递 `dispatch` 而不是回调函数。
+
+
+### 使用
+
+- 指定初始值
+
+  ```javascript {highlight: [2]}
+  ...
+  const initialState = {count: 0};
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case 'increment':
+        return {count: state.count + 1};
+      case 'decrement':
+        return {count: state.count - 1};
+      default:
+        throw new Error();
+    }
+  }
+
+  function Counter() {
+    const [state, dispatch] = useReducer(reducer, initialState);
+    return (
+      <>
+        Count: {state.count}
+        <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+        <button onClick={() => dispatch({type: 'increment'})}>+</button>
+      </>
+    );
+  }
+  ...
+  ```
+
+- 惰性初始化
+  也就是：使用第三个`init`函数对`initialArg`进行某些操作
+
+  ```javascript {highlight: ['1-3', 11, 12, 24]}
+  function init(initialCount) {
+    return {count: initialCount};
+  }
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case 'increment':
+        return {count: state.count + 1};
+      case 'decrement':
+        return {count: state.count - 1};
+      case 'reset':
+        return init(action.payload);
+      default:
+        throw new Error();
+    }
+  }
+
+  function Counter({initialCount}) {
+    const [state, dispatch] = useReducer(reducer, initialCount, init);
+    return (
+      <>
+        Count: {state.count}
+        <button
+          onClick={() => dispatch({type: 'reset', payload: initialCount})}>
+
+          Reset
+        </button>
+        <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+        <button onClick={() => dispatch({type: 'increment'})}>+</button>
+      </>
+    );
+  }
+  ```
 
 ## `useCallback`
 
+useCallback 是一种__调优__手段，返回一个`memoized`回调__函数__。
+
+### 使用
+
+```javascript
+const memoizedCallback = useCallback(
+  () => {
+    doSomething(a, b);
+  },
+  [a, b],
+);
+```
+
+把内联回调函数`doSomething()`及 依赖数组`[a, b]`作为参数传入`useCallback`，它将返回该回调函数的记忆化版本，该回调`memoizedCallback`仅在某个依赖项改变时财辉更新。
+
+当把`memoizedCallback`传递给经过优化的并使用引用相等性去避免非必要渲染（例如 shouldComponentUpdate）的子组件时，它将非常有用。
+
+子组件就可以在某些地方（例如 shouldComponentUpdate）里根据某些条件去判断是否执行以更新
+
+__PS__:
+
+- 依赖项数组不会作为参数传给回调函数。
+- `useCallback(fn, deps)` 相当于 `useMemo(() => fn, deps)`。
 
 
 
 ## `useMemo`
 
+`useMemo` 是一种__调优__手段，返回一个`memoized`回调__值__。
 
+### 使用
+
+```javascript
+const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
+```
+
+把“创建”函数和依赖项数组作为参数传入`useMemo`，当依赖项更改时才会重新计算memoized值。
+
+传入 useMemo 的函数会在渲染期间执行，所以建议在这个函数内部执行和渲染有关系的操作，比如页面渲染某个数值，而你又会在useMemo中进行计算等操作。
+
+如果没有提供依赖项数组，useMemo 在每次渲染时都会计算新的值。
+
+#### 注意：
+先编写在没有 `useMemo` 的情况下也可以执行的代码 —— 之后再在你的代码中添加 useMemo，以达到优化性能的目的。不要过度耦合才是关键。
 
 ## `useRef`
+
+>ref: referrence, 参考、引用
+
+`useRef` 返回一个可变的ref对象，其`.current`属性被初始化为传入的参数（initialValue）。
+
+注意：返回的ref对象在组件的整个生命周期内保持不变
+
+```javascript
+const refContainer = useRef(initialValue);
+```
+
+### 使用
+
+```javascript {highlight: [2, 5, 9]}
+function TextInputWithFocusButton() {
+  const inputEl = useRef(null);
+  const onButtonClick = () => {
+    // `current` 指向已挂载到 DOM 上的文本输入元素
+    inputEl.current.focus();
+  };
+  return (
+    <>
+      <input ref={inputEl} type="text" />
+      <button onClick={onButtonClick}>Focus the input</button>
+    </>
+  );
+}
+```
+- 使用`useRef`创建一个ref对象（inputEl），初始值可以设为`null`
+- 在DOM中某个元素通过自定义属性 `ref={inputEl}` 进行挂载
+- 在需要使用的地方通过`inputEl.current` 对DOM元素进行访问
+
+
 
 
 ## `useLayoutEffect`
