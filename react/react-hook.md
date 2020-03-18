@@ -157,6 +157,34 @@ useEffect(() => {
 }, [props.friend.id]); // 仅在 props.friend.id 发生变化时，重新订阅
 ```
 
+### 在 useEffect 中调用用函数时，要把该函数在 useEffect 中申明，不能放到外部申明，然后再在 useEffect 中调用
+
+因为这样你可能会漏掉某些依赖项，而且在直觉上你是无法直接看出到底使用了哪些依赖，可能导致useEffect执行时机出现问题
+
+```javascript
+// bad
+function Example({ someProp }) {
+  function doSomething() {
+    console.log(someProp);
+  }
+
+  useEffect(() => {
+    doSomething();
+  }, []); // 🔴 这样不安全（它调用的 `doSomething` 函数使用了 `someProp`）
+}
+
+// good
+function Example({ someProp }) {
+  useEffect(() => {
+    function doSomething() {
+      console.log(someProp);
+    }
+
+    doSomething();
+  }, [someProp]); // ✅ 安全（我们的 effect 仅用到了 `someProp`）
+}
+```
+
 ## `useLayoutEffect`
 
 > *官方提示我们：尽可能使用标准的 useEffect 以避免阻塞视觉更新。*
