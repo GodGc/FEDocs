@@ -56,9 +56,11 @@ var setFruit = fruitStateVariable[1]; // 数组里的第二个值
 
 
 ## `useEffect`
+
 > Effect Hook 可以让你在函数组件中执行副作用操作: 数据获取，设置订阅以及手动更改 React 组件中的 DOM 
 > 你可以把 useEffect Hook 看做 componentDidMount，componentDidUpdate 和 componentWillUnmount 这三个函数的组合, 所以在有些时候，使用函数组件会比class组件更加方便。
 
+但与 componentDidMount 或 componentDidUpdate 不同，使用 useEffect 调度的 effect **不会阻塞浏览器更新屏幕**，这让你的应用看起来响应更快。
 
 ```javascript {highlight: [1,'6-10']}
 import React, { useState, useEffect } from 'react';
@@ -154,6 +156,35 @@ useEffect(() => {
   };
 }, [props.friend.id]); // 仅在 props.friend.id 发生变化时，重新订阅
 ```
+
+## `useLayoutEffect`
+
+> *官方提示我们：尽可能使用标准的 useEffect 以避免阻塞视觉更新。*
+
+![](http://www.godrry.com/usr/uploads/2020/03/333513058.png)
+
+
+
+`useLayoutEffect` 和 `useEffect` 的作用以及使用方式是相似的，只是在**触发的时机**上有不同。
+
+- useEffect 在全部渲染完毕后才会执行, 也就是DOM树和CSSOM树全部绘制完毕之后DIsplay才会执行，这个时候页面已经展示完毕了
+
+- useLayoutEffect 会在 浏览器 layout 之后，painting 之前执行
+
+
+我们可以使用它来读取 DOM 布局并同步触发重渲染，也就是说可以使用它做一些干预DOM的事情，但不可否认的是，它会阻塞视觉更新，让页面展示慢了一点。
+
+### 使用
+
+```javascript
+
+useLayoutEffect = () => {
+  // do something...
+}
+
+```
+
+
 
 
 ## `useContext`
@@ -349,16 +380,23 @@ const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 
 如果没有提供依赖项数组，useMemo 在每次渲染时都会计算新的值。
 
-#### 注意：
+### 注意
+
 先编写在没有 `useMemo` 的情况下也可以执行的代码 —— 之后再在你的代码中添加 useMemo，以达到优化性能的目的。不要过度耦合才是关键。
+
+`useMemo` 本身也有开销。
+useMemo 会「记住」一些值，同时在后续 render 时，将依赖数组中的值取出来和上一次记录的值进行比较，如果不相等才会重新执行回调函数，否则直接返回「记住」的值。
+这个过程本身就会消耗一定的内存和计算资源。因此，__过度使用 useMemo 可能会影响程序的性能__。
+
 
 ## `useRef`
 
->ref: referrence, 参考、引用
+> ref: referrence, 参考、引用
+> useRef() Hook 不仅可以用于 DOM refs。「ref」 对象是一个 current 属性可变且可以容纳任意值的通用容器，类似于一个 class 的实例属性。
 
 `useRef` 返回一个可变的ref对象，其`.current`属性被初始化为传入的参数（initialValue）。
 
-注意：返回的ref对象在组件的整个生命周期内保持不变
+<span style="color: red">注意</span>：返回的ref对象在组件的整个生命周期内保持不变，所以如果你把ref对象作为依赖项传入`useEffect`的依赖数组里，那这个hook就不会再次执行了
 
 ```javascript
 const refContainer = useRef(initialValue);
@@ -385,11 +423,55 @@ function TextInputWithFocusButton() {
 - 在DOM中某个元素通过自定义属性 `ref={inputEl}` 进行挂载
 - 在需要使用的地方通过`inputEl.current` 对DOM元素进行访问
 
+## forwardRef
 
+顾名思义：**转发Ref对象，以供操作**
 
+ 在使用类组件的时候，创建 ref 返回一个对象，该对象的 current 属性值为空
 
-## `useLayoutEffect`
+ 只有当它被赋给某个元素的 ref 属性时，才会有值
 
+ 所以父组件（类组件）创建一个 ref 对象，然后传递给子组件（类组件），子组件内部有元素使用了
+
+ 那么父组件就可以操作子组件中的某个元素
+
+ 但是函数组件无法接收 ref 属性 <Child ref={xxx} /> 这样是不行的
+
+ 所以就需要用到 `forwardRef` 进行转发
+
+- forwardRef 可以在父组件中操作子组件的 ref 对象
+- forwardRef 可以将父组件中的 ref 对象转发到子组件中的 dom 元素上
+- 子组件接受 props 和 ref 作为参数
+
+### 使用：
+
+```javascript {highlight: [2, 8, 12, 19]}
+
+function Child(props,ref){  // 子组件接收2个参数：props、ref
+  return (
+    <input type="text" ref={ref}/>
+  )
+}
+// 子组件通过forwardRef进行再次包裹，你可以想象它是一个高阶组件的形式
+Child = React.forwardRef(Child);  
+
+function Parent(){
+  let [number,setNumber] = useState(0); 
+  const inputRef = useRef();  // 父组件创建一个空的Ref对象 {current:''}
+  function getFocus(){
+    inputRef.current.value = 'focus';
+    inputRef.current.focus();
+  }
+  return (
+      <>
+        <Child ref={inputRef}/> // 将Ref对象通过传值得方式挂载到子组件上
+        <button onClick={()=>setNumber({number:number+1})}>+</button>
+        <button onClick={getFocus}>获得焦点</button>
+      </>
+  )
+}
+
+```
 
 
 ## 使用Hooks 请求数据
@@ -484,3 +566,9 @@ useEffect(() => {
 
 ...
 ```
+
+## HOOK FAQ
+
+接下来 可能需要再细看一些比较具体的场景了
+
+那么请移步官方文档吧：https://react.docschina.org/docs/hooks-faq.html
