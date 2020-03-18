@@ -417,6 +417,66 @@ function MeasureExample() {
 __注意__: 我们传递了 [] 作为 useCallback 的依赖列表。
 这确保了 ref callback 不会在再次渲染时改变，因此 React 不会在非必要的时候调用它。
 
+
+## `useMemo`
+
+`useMemo` 是一种__调优__手段，返回一个`memoized`回调__值__。
+
+### 使用
+
+```javascript
+const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
+```
+
+把“创建”函数和依赖项数组作为参数传入`useMemo`，当依赖项更改时才会重新计算memoized值，如果依赖数组[a, b]自上次赋值以后没有改变过，useMemo 会跳过第二次调用，只是简单复用它上一次返回的值。
+
+传入 useMemo 的函数会在渲染期间执行，所以建议在这个函数内部执行和渲染有关系的操作，比如页面渲染某个数值，而你又会在useMemo中进行计算等操作。
+
+如果没有提供依赖项数组，useMemo 在每次渲染时都会计算新的值。
+
+### 注意
+
+先编写在没有 `useMemo` 的情况下也可以执行的代码 —— 之后再在你的代码中添加 useMemo，以达到优化性能的目的。不要过度耦合才是关键。
+
+`useMemo` 本身也有开销。
+useMemo 会「记住」一些值，同时在后续 render 时，将依赖数组中的值取出来和上一次记录的值进行比较，如果不相等才会重新执行回调函数，否则直接返回「记住」的值。
+这个过程本身就会消耗一定的内存和计算资源。因此，__过度使用 useMemo 可能会影响程序的性能__。
+
+
+## `useRef`
+
+> ref: referrence, 参考、引用
+> useRef() Hook 不仅可以用于 DOM refs。「ref」 对象是一个 current 属性可变且可以容纳任意值的通用容器，类似于一个 class 的实例属性。
+
+`useRef` 返回一个可变的ref对象，其`.current`属性被初始化为传入的参数（initialValue）。
+
+<span style="color: red">注意</span>：返回的ref对象在组件的整个生命周期内保持不变，所以如果你把ref对象作为依赖项传入`useEffect`的依赖数组里，那这个hook就不会再次执行了
+
+```javascript
+const refContainer = useRef(initialValue);
+```
+
+### 使用
+
+```javascript {highlight: [2, 5, 9]}
+function TextInputWithFocusButton() {
+  const inputEl = useRef(null);
+  const onButtonClick = () => {
+    // `current` 指向已挂载到 DOM 上的文本输入元素
+    inputEl.current.focus();
+  };
+  return (
+    <>
+      <input ref={inputEl} type="text" />
+      <button onClick={onButtonClick}>Focus the input</button>
+    </>
+  );
+}
+```
+- 使用`useRef`创建一个ref对象（inputEl），初始值可以设为`null`
+- 在DOM中某个元素通过自定义属性 `ref={inputEl}` 进行挂载
+- 在需要使用的地方通过`inputEl.current` 对DOM元素进行访问
+
 ### 聊一下类组件的 创建Refs 和 回调Refs
 
 > 见缝插针的聊一下
@@ -494,65 +554,6 @@ class CustomTextInput extends React.Component {
   }
 }
 ```
-
-## `useMemo`
-
-`useMemo` 是一种__调优__手段，返回一个`memoized`回调__值__。
-
-### 使用
-
-```javascript
-const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
-```
-
-把“创建”函数和依赖项数组作为参数传入`useMemo`，当依赖项更改时才会重新计算memoized值，如果依赖数组[a, b]自上次赋值以后没有改变过，useMemo 会跳过第二次调用，只是简单复用它上一次返回的值。
-
-传入 useMemo 的函数会在渲染期间执行，所以建议在这个函数内部执行和渲染有关系的操作，比如页面渲染某个数值，而你又会在useMemo中进行计算等操作。
-
-如果没有提供依赖项数组，useMemo 在每次渲染时都会计算新的值。
-
-### 注意
-
-先编写在没有 `useMemo` 的情况下也可以执行的代码 —— 之后再在你的代码中添加 useMemo，以达到优化性能的目的。不要过度耦合才是关键。
-
-`useMemo` 本身也有开销。
-useMemo 会「记住」一些值，同时在后续 render 时，将依赖数组中的值取出来和上一次记录的值进行比较，如果不相等才会重新执行回调函数，否则直接返回「记住」的值。
-这个过程本身就会消耗一定的内存和计算资源。因此，__过度使用 useMemo 可能会影响程序的性能__。
-
-
-## `useRef`
-
-> ref: referrence, 参考、引用
-> useRef() Hook 不仅可以用于 DOM refs。「ref」 对象是一个 current 属性可变且可以容纳任意值的通用容器，类似于一个 class 的实例属性。
-
-`useRef` 返回一个可变的ref对象，其`.current`属性被初始化为传入的参数（initialValue）。
-
-<span style="color: red">注意</span>：返回的ref对象在组件的整个生命周期内保持不变，所以如果你把ref对象作为依赖项传入`useEffect`的依赖数组里，那这个hook就不会再次执行了
-
-```javascript
-const refContainer = useRef(initialValue);
-```
-
-### 使用
-
-```javascript {highlight: [2, 5, 9]}
-function TextInputWithFocusButton() {
-  const inputEl = useRef(null);
-  const onButtonClick = () => {
-    // `current` 指向已挂载到 DOM 上的文本输入元素
-    inputEl.current.focus();
-  };
-  return (
-    <>
-      <input ref={inputEl} type="text" />
-      <button onClick={onButtonClick}>Focus the input</button>
-    </>
-  );
-}
-```
-- 使用`useRef`创建一个ref对象（inputEl），初始值可以设为`null`
-- 在DOM中某个元素通过自定义属性 `ref={inputEl}` 进行挂载
-- 在需要使用的地方通过`inputEl.current` 对DOM元素进行访问
 
 ## forwardRef
 
