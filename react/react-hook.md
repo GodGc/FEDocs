@@ -1,5 +1,9 @@
 # React Hook 
-Hook 是React 16.8版本中新增的内容，它的出现让函数组件拥有了类似class组件的能力（生命周期等），同时也优化了一些过去的缺点，例如逻辑复用复杂、多个生命周期函数多次调用等。
+Hook 是React 16.8版本中新增的内容，它的出现让函数组件拥有了类似class组件的能力（生命周期等），同时也优化了一些过去的缺点，例如：
+
+- Hook 避免了 class 需要的额外开支，像是创建类实例和在构造函数中绑定事件处理器的成本。
+
+- 符合语言习惯的代码在使用 Hook 时不需要很深的组件树嵌套。这个现象在使用高阶组件、render props、和 context 的代码库中非常普遍。组件树小了，React 的工作量也随之减少。
 
 ## `useState`
 > useState 是允许你在 React 函数组件中添加 state 的 Hook。它很像class组件中的`this.setState`方法。
@@ -366,17 +370,14 @@ const [state, dispatch] = useReducer(reducer, initialArg, init);
 
 ## `useCallback`
 
-useCallback 是一种__调优__手段，返回一个`memoized`回调__函数__。
+useCallback 是一种__调优__手段，返回一个`memoized`回调__函数__，只有当依赖项发生改变时，这个函数才会真的执行。
 
 ### 使用
 
 ```javascript
-const memoizedCallback = useCallback(
-  () => {
+const memoizedCallback = useCallback(() => {
     doSomething(a, b);
-  },
-  [a, b],
-);
+  },[a, b]);
 ```
 
 把内联回调函数`doSomething()`及 依赖数组`[a, b]`作为参数传入`useCallback`，它将返回该回调函数的记忆化版本，该回调`memoizedCallback`仅在某个依赖项改变时财辉更新。
@@ -390,7 +391,109 @@ __PS__:
 - 依赖项数组不会作为参数传给回调函数。
 - `useCallback(fn, deps)` 相当于 `useMemo(() => fn, deps)`。
 
+### 使用`useCallback` 去测量一个盒子的大小 而不是`useRef`
 
+这是因为当ref挂载的DOM发生改变时，useRef不会notify 通知你，使用`useCallback` 实现这个需求，因为每当 ref 被附加到一个另一个节点，React 就会调用 callback。
+
+```javascript {highlight: ['4-8', 12]}
+function MeasureExample() {
+  const [height, setHeight] = useState(0);
+  // 这有点类似类组件中的 回调refs
+  const measuredRef = useCallback(node => { 
+    if (node !== null) {
+      setHeight(node.getBoundingClientRect().height);
+    }
+  }, []);
+
+  return (
+    <>
+      <h1 ref={measuredRef}>Hello, world</h1>
+      <h2>The above header is {Math.round(height)}px tall</h2>
+    </>
+  );
+}
+```
+
+__注意__: 我们传递了 [] 作为 useCallback 的依赖列表。
+这确保了 ref callback 不会在再次渲染时改变，因此 React 不会在非必要的时候调用它。
+
+### 聊一下类组件的 创建Refs 和 回调Refs
+
+> 见缝插针的聊一下
+
+#### 创建Refs 
+
+```javascript {highlight: [4,7]}
+class MyComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.myRef = React.createRef(); // 创建Ref
+  }
+
+  handleOnClick = () => {
+    console.log(this.myRef.current); // 访问Ref
+  }
+
+  render() {
+    return <div onClick={this.handleOnClick} ref={this.myRef} />; // 挂载Ref
+  }
+}
+
+```
+
+这是React在 v16.3中引入的新API，可以声明式的创建一个Ref对象，然后通过在DOM处使用ref 自定义属性挂载这个Ref对象，然后你就可以通过`this.RefObject.current` 进行访问。
+
+ref 的值根据节点的类型而有所不同：
+
+- 当 ref 属性用于 HTML 元素时，构造函数中使用 React.createRef() 创建的 ref 接收底层 DOM 元素作为其 current 属性。
+- 当 ref 属性用于自定义 class 组件时，ref 对象接收组件的挂载实例作为其 current 属性。
+- 你不能在函数组件上使用 ref 属性，因为他们没有实例，但是可以使用`useRef`。
+
+#### 回调Ref，帮助你更精细的控制Ref挂载和卸载
+
+DOM的ref属性接收一个函数，传入当前DOM节点作为参数，你可以在这个函数内把DOM节点赋值到某个变量上，以供其他时机使用
+
+```javascript
+class CustomTextInput extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.textInput = null;
+
+    this.setTextInputRef = element => { // 接收当前DOM节点作为参数
+      this.textInput = element; // 赋值到this.textInput上
+    };
+
+    this.focusTextInput = () => {
+      // 使用原生 DOM API 使 text 输入框获得焦点
+      if (this.textInput) this.textInput.focus();
+    };
+  }
+
+  componentDidMount() {
+    // 组件挂载后，让文本框自动获得焦点
+    this.focusTextInput();
+  }
+
+  render() {
+    // 使用 `ref` 的回调函数将 text 输入框 DOM 节点的引用存储到 React
+    // 实例上（比如 this.textInput）
+    return (
+      <div>
+        <input
+          type="text"
+          ref={this.setTextInputRef}
+        />
+        <input
+          type="button"
+          value="Focus the text input"
+          onClick={this.focusTextInput}
+        />
+      </div>
+    );
+  }
+}
+```
 
 ## `useMemo`
 
@@ -402,7 +505,7 @@ __PS__:
 const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 ```
 
-把“创建”函数和依赖项数组作为参数传入`useMemo`，当依赖项更改时才会重新计算memoized值。
+把“创建”函数和依赖项数组作为参数传入`useMemo`，当依赖项更改时才会重新计算memoized值，如果依赖数组[a, b]自上次赋值以后没有改变过，useMemo 会跳过第二次调用，只是简单复用它上一次返回的值。
 
 传入 useMemo 的函数会在渲染期间执行，所以建议在这个函数内部执行和渲染有关系的操作，比如页面渲染某个数值，而你又会在useMemo中进行计算等操作。
 
@@ -501,6 +604,22 @@ function Parent(){
 
 ```
 
+## Hooks 对应的类组件声明周期
+
+- `constructor`：函数组件不需要构造函数。你可以通过调用 `useState` 来初始化 state。如果计算的代价比较昂贵，你可以传一个函数给 `useState`。
+
+- `getDerivedStateFromProps`：改为 在渲染时 安排一次更新。
+
+- `shouldComponentUpdate`：详见 `React.memo`.
+
+- `render`：这是函数组件体本身。
+
+- `componentDidMount`, `componentDidUpdate`, `componentWillUnmount`：`useEffect Hook` 可以表达所有这些(包括 不那么 常见 的场景)的组合。
+
+- `getSnapshotBeforeUpdate`，`componentDidCatch` 以及 `getDerivedStateFromError`：目前还没有这些方法的 Hook 等价写法，但很快会被添加。
+
+
+
 
 ## 使用Hooks 请求数据
 
@@ -573,7 +692,7 @@ useEffect(async () => {
 ```
 
 所以我们在之前的那一步async/await 会出现一个error：
-`index.js:1452 Warning: useEffect function must return a cleanup function or nothing. 
+`index.js:1452 Warning: useEffect function must return a cleanup function or nothing.
 Promises and useEffect(async () => …) are not supported, but you can call an async function inside an effect.`
 
 知晓了这个原因，那我们可以改变思路，只要不让`useEffect` 直接返回promise就可以了:
@@ -594,6 +713,57 @@ useEffect(() => {
 
 ...
 ```
+
+## 如何使用Hook避免向下层层传递回调
+
+在组件树中，通过手动的给每一层手动传递回调是一件非常让人头疼的事情。
+
+所以，React官方推荐我们 通过context 用 `useReducer`往下传一个dispatch函数，然后子组件使用dispatch函数向上传递一个action来更改存储的state
+
+- `father component`：
+  ```javascript {highlight: [1, 4, '8-10']}
+  const TodosDispatch = React.createContext(null);
+
+  function TodosApp() {
+    const [todos, dispatch] = useReducer(todosReducer);
+  }
+
+  return (
+    <TodosDispatch.Provider value={dispatch}>
+      <DeepTree todos={todos} />
+    </TodosDispatch.Provider>
+  )
+  ```
+
+- `grandson component01`， 层级很深的某个嵌套组件
+  ```javascript {highlight: [2, 5, 9]}
+  function DeepChild(props) {
+    const dispatch = useContext(TodoDispatch); // 使用 useContext 传入context对象 生成dispatch方法
+
+    function handleClick() {
+      dispatch({ type: 'add', text: 'hello' }); // dispatch 一个action 触发 reducer中的更改规则
+    }
+
+    return (
+      <button onClick={handleClick}>Add todo</button>
+    )
+  }
+  ```
+
+-同理：`grandson component 02`， 层级很深的某个嵌套组件
+  ```javascript {highlight: [2, 5, 9]}
+  function DeepComp(props) {
+    const dispatch = useContext(TodoDispatch); // 使用 useContext 传入context对象 生成dispatch方法
+
+    function handleClick() {
+      dispatch({ type: 'decrement', text: 'running' }); // dispatch 一个action 触发 reducer中的更改规则
+    }
+
+    return (
+      <button onClick={handleClick}>decrement todo</button>
+    )
+  }
+  ```
 
 ## HOOK FAQ
 
