@@ -9,12 +9,20 @@
 
 2.React 常用的 hook 有什么？
 - `useState`: `const [count, setCount] = useState(0)`
+- `useEffect`
+- `useCallback`
+- `useRef`
+- `useMemo`
 
 3.`useMemo` 平时都怎么用的？
 
 4.平时做过哪些 React 优化？怎么定位问题，如何优化？
 
+- 使用`Memo`优化无需每次都要渲染的组件
+
 5.hook 解决了什么问题？为什么有 hook
+
+它的出现让函数组件拥有了类似class组件的能力（生命周期等），同时也优化了一些过去的缺点
 
 6.了解合成事件吗？是什么？为什么需要合成事件？（解决什么问题？）
 - React 合成事件:
@@ -78,17 +86,29 @@
     
 7.循环里的 key 有什么用？为什么一定要加？
 
+减少diff算法时对比virtual dom 的开销，以及避免渲染时发生意外情况，比如dom节点意外不更新等
+
 8.平时状态管理工具用什么？怎么选型的？为什么？redux 和 mobx 什么区别？
+
+- 平时使用redux，根据熟悉程度进行选择即可，没有什么必须是要用的
+
+- 管理数据的方式不同，redux是通过单项数据流的flux思想构建的，mobx则不是
 
 9.什么是高阶组件？
 
+高阶组件HOC，简单讲就是将一个组件作为参数传入另外一个组件，在这个组件内对其进行某些操作后，再返回这个组件
+
 10.redux 的 connect 是什么？为什么需要 connect？
+
+内部组件connect进行连接，它是一个高阶函数HOC，在redux内部进行hook，然后根据你提供的`mapStateToProps`取出整个state，供你使用
 
 11.PureComponent 和 React.memo 有什么区别？
 
 12.context 是什么？用过吗？怎么用的？
 
 13.ref 用过吗？什么场景？
+
+ref可以获取dom节点的信息，可以用来获取dom高度，input自动聚焦等。
 
 14.react-router 原理是什么？和 vue-router 什么区别？什么是动态路由，什么是静态路由？有什么区别？
 
@@ -160,7 +180,6 @@ class Checkbox extends React.Component {
     // ... 
 }
 ```
-
 
 
 17.React 是如何 rerender 的？（得略懂源码，比如 diff vdom，然后判断是否要 render）

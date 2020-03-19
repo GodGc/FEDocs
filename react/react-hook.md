@@ -543,6 +543,7 @@ class CustomTextInput extends React.Component {
         <input
           type="text"
           ref={this.setTextInputRef}
+          // ref={(node)=>{ this.node = element; }} // 一般情况下我们会直接简化成这样
         />
         <input
           type="button"
@@ -617,9 +618,8 @@ function Parent(){
 
 - `componentDidMount`, `componentDidUpdate`, `componentWillUnmount`：`useEffect Hook` 可以表达所有这些(包括 不那么 常见 的场景)的组合。
 
+- `componentWillUnmount`：相当于 useEffect 里面返回的 cleanup 函数
 - `getSnapshotBeforeUpdate`，`componentDidCatch` 以及 `getDerivedStateFromError`：目前还没有这些方法的 Hook 等价写法，但很快会被添加。
-
-
 
 
 ## 使用Hooks 请求数据

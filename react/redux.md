@@ -1,6 +1,6 @@
 # Redux
 
-## Flux 和 Redux 
+## Flux 和 Redux
 
 Flux是一种架构思想，可以把它看做一种应用程序中**数据流**的设计模式；Flux应用中的数据以单一方向流动。
 
