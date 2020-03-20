@@ -1,5 +1,9 @@
 # React
 
+官方网站：https://react.docschina.org/docs/hello-world.html
+
+React 小书： http://huziketang.mangojuice.top/books/react/
+
 ## 常见内容
 1.React 平时怎么绑定事件的？函内绑定和成员的箭头函数绑定有什么区别？如果是在 `constructor `里 bind 绑定呢？
 - 在render中的元素处绑定事件，分别：绑定函数式绑定一个箭头函数、bind函数、`constructor`时bind函数；
@@ -219,16 +223,11 @@ class Checkbox extends React.Component {
 </div>
 
 ```
+23. `React.PureComponent` 和 `React.memo` 的区别
 
+> 继承了PureComponent，进行的就是“浅”比较，它是通过Prop和State的浅比较来实现的shouldComponentUpdate.
+> PureComponent不仅会影响本身，而且会影响子组件，所以PureComponent最佳情况是展示组件，也就是“纯”组件。
 
-## React Hooks
+- `React.PureComponent` 适用于class组件，是一个封装了对比机制的普通组件
+- `React.memo` 适用于函数组件，是一个高阶组件
 
-[终于搞懂 React Hooks了！！！！！](https://juejin.im/post/5e53d9116fb9a07c9070da44)
-
-[React Hooks 详解 【近 1W 字】+ 项目实战](https://juejin.im/post/5dbbdbd5f265da4d4b5fe57d#heading-17)
-
-[30分钟精通React Hooks](https://juejin.im/post/5be3ea136fb9a049f9121014)
-
-[10分钟教你手写8个常用的自定义hooks](https://juejin.im/post/5e57d0dfe51d4526ce6147f2)
-
-[Hooks 的性能优化及可能会遇到的坑总结](https://juejin.im/post/5e5c6ca9518825496706801e)

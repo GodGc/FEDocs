@@ -771,3 +771,17 @@ useEffect(() => {
 接下来 可能需要再细看一些比较具体的场景了
 
 那么请移步官方文档吧：https://react.docschina.org/docs/hooks-faq.html
+
+__OR__
+
+[终于搞懂 React Hooks了！！！！！](https://juejin.im/post/5e53d9116fb9a07c9070da44)
+
+[蚂蚁保险体验技术 - 写React Hooks前必读](https://juejin.im/post/5e6ccbf86fb9a07cb52bddf1)
+
+[React Hooks 详解 【近 1W 字】+ 项目实战](https://juejin.im/post/5dbbdbd5f265da4d4b5fe57d#heading-17)
+
+[30分钟精通React Hooks](https://juejin.im/post/5be3ea136fb9a049f9121014)
+
+[10分钟教你手写8个常用的自定义hooks](https://juejin.im/post/5e57d0dfe51d4526ce6147f2)
+
+[Hooks 的性能优化及可能会遇到的坑总结](https://juejin.im/post/5e5c6ca9518825496706801e)
