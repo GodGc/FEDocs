@@ -278,34 +278,34 @@ function create(){
     - Object.create(proto,[propertiesObject])
 
     ```javascript
-    function _inherits(subClass, superClass) { 
+    function _inherits(subClass, superClass) {
         subClass.prototype = Object.create(superClass.prototype, {
-            constructor: { 
+            constructor: {
                 value: subClass,
-                enumerable: false, 
-                writable: true, 
-                configurable: true 
-            } 
-        }); 
+                enumerable: false,
+                writable: true,
+                configurable: true
+            }
+        });
         subClass.__proto__ = superClass;
     }
+    ```
 
-```
-    
 **实现一个Object.create**
+
 ```javascript
 
 Object.create = function (obj, properties) { 
     // 新建一个空函数
-    function F() {} 
+    function F() {}
     // 空函数原型连接到父类，完成继承
-    F.prototype = obj; 
-    
-    if(properties) { 
-        Object.defineProperties(F, properties); 
+    F.prototype = obj;
+
+    if(properties) {
+        Object.defineProperties(F, properties);
     }
     // 返回这个空函数
-    return new F(); 
+    return new F();
 };
 ```
 
