@@ -131,7 +131,7 @@ ref可以获取dom节点的信息，可以用来获取dom高度，input自动聚
 - 一定要传`props`吗？如果只`super()`可以吗？
     - 可以，但是不建议，因为React如果发现我们没有在super中传props，那么它会替我们的组件设置`props`属性，虽然`props`可以拿到值，但是`this.props`在`constructor`中却会一直都会是`undefined`
     
-```JavaScript
+```javascript
 
 // Inside React 
 class Component { 

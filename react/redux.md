@@ -65,7 +65,7 @@ Redux更多的是遵循Flux模式的一种实现，是一个JavaScript库，它�
 `/store/Store.js`
 
   ```javascript
-  import { creatStore } from "redux";
+  import { createStore } from "redux";
   import { INCREMENT, RESET } from "./actions.js";	// 引入actions列表的内容
   
   // 初始化state值
